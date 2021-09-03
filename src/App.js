@@ -1,8 +1,10 @@
 import React from "react";
+import Board from "./components/Board.js";
 
 export default () => (
-  <>
-    <h1>Welcome to my React App!</h1>
-    <p>Gud morning</p>
-  </>
+  <div>
+    <h1>TicTacToe</h1>
+    <Board />
+    
+  </div>
 );
