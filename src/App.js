@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import Board from './components/Board';
-import { calculateWinner } from './helpers';
 import History from './components/History';
+import StatusMessage from './StatusMessage';
+import { calculateWinner } from './helpers';
 
 import './Root.scss';
 
-const App = () => {
-  const [history, setHistory] = useState(
-    [{board : Array(9).fill(null),isXNext: true}]
-    );
-    const [currentMove, setCurrentMove] = useState(0);
+const NEW_GAME = [{ board: Array(9).fill(null), isXNext: true }];
 
-    const current = history[currentMove];
-    console.log('history', history);
-  const winner = calculateWinner(current.board);
-  const message = winner
-    ? `Winner is ${winner}`
-    : `Next player is ${current.isXNext ? 'X' : 'O'}`;
+const App = () => {
+  const [history, setHistory] = useState(NEW_GAME);
+  const [currentMove, setCurrentMove] = useState(0);
+  const current = history[currentMove];
+
+  const { winner, winningSquares } = calculateWinner(current.board);
 
   const handleSquareClick = position => {
     if (current.board[position] || winner) {
@@ -33,23 +30,39 @@ const App = () => {
 
         return square;
       });
-      return prev.concat({board: newBoard, isXNext: !last.isXNext});
+
+      return prev.concat({ board: newBoard, isXNext: !last.isXNext });
     });
 
     setCurrentMove(prev => prev + 1);
   };
 
-const moveTo = move => {
-  setCurrentMove(move);
-}
+  const moveTo = move => {
+    setCurrentMove(move);
+  };
+
+  const onNewGame = () => {
+    setHistory(NEW_GAME);
+    setCurrentMove(0);
+  };
 
   return (
     <div className="app">
-      <h1>TIC TAC TOE</h1>
-      <h2>{message}</h2>
-      <Board board={current.board} handleSquareClick={handleSquareClick} />
+      <h1>TIC <span className="text-green">TAC</span> TOE</h1>
+      <StatusMessage winner={winner} current={current} />
+      <Board
+        board={current.board}
+        handleSquareClick={handleSquareClick}
+        winningSquares={winningSquares}
+      />
+      <button type="button" onClick={onNewGame} className={`btn-reset ${winner ? 'active':''}`}>
+        Start new game
+      </button>
+      <h2 style={{fontweight:'normal'}}>Current Game History</h2>
       <History history={history} moveTo={moveTo} currentMove={currentMove} />
+    <div className="bg-balls"/>
     </div>
+    
   );
 };
 
